@@ -171,13 +171,13 @@
     
 ### 모델 수정
 
-![분석설계6_new](https://user-images.githubusercontent.com/27762942/130165883-b6ca8706-8189-4c9e-a529-1f4291eef6de.png)
+![image](https://user-images.githubusercontent.com/45943968/131250796-ac43b39d-35cc-42cc-9d3e-929403d83738.png)
     
     - 수정된 모델은 모든 요구사항을 커버함.
 
 ### 비기능 요구사항에 대한 검증
 
-![분석설계6_new](https://user-images.githubusercontent.com/27762942/130165883-b6ca8706-8189-4c9e-a529-1f4291eef6de.png)
+![image](https://user-images.githubusercontent.com/45943968/131250822-3103ce37-a6ea-46cd-9cb2-fc27d4229464.png)
 
     - 마이크로 서비스를 넘나드는 시나리오에 대한 트랜잭션 처리
         - 예약 요청 시 결제처리:  결제가 완료되지 않은 예약은 절대 받지 않는다는 정책에 따라, ACID 트랜잭션 적용. 예약요청시 결제처리에 대해서는 Request-Response 방식 처리
