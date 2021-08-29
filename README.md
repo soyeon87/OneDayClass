@@ -1,21 +1,20 @@
-![image](https://user-images.githubusercontent.com/15603058/119284989-fefe2580-bc7b-11eb-99ca-7a9e4183c16f.jpg)
+![image](https://user-images.githubusercontent.com/45943968/131246620-5c037814-7466-444b-8383-be691c8e0b77.png)
 
-# 숙소예약(AirBnB)
+# 원데이클래스 예약
 
 본 예제는 MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단계를 커버하도록 구성한 예제입니다.
 이는 클라우드 네이티브 애플리케이션의 개발에 요구되는 체크포인트들을 통과하기 위한 예시 답안을 포함합니다.
 - 체크포인트 : https://workflowy.com/s/assessment-check-po/T5YrzcMewfo4J6LW
 
-
 # Table of contents
 
-- [예제 - 숙소예약](#---)
+- [원데이클래스 예약](#---)
   - [서비스 시나리오](#서비스-시나리오)
   - [체크포인트](#체크포인트)
   - [분석/설계](#분석설계)
   - [구현:](#구현-)
     - [DDD 의 적용](#ddd-의-적용)
-    - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
+    - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스
     - [폴리글랏 프로그래밍](#폴리글랏-프로그래밍)
     - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
     - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
@@ -28,7 +27,7 @@
 
 # 서비스 시나리오
 
-AirBnB 커버하기
+원데이클래스 예약
 
 기능적 요구사항
 1. 호스트가 임대할 숙소를 등록/수정/삭제한다.
