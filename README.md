@@ -169,20 +169,6 @@
     - 고객은 예약 상태를 확인하고, 작가는 원데이클래스/예약 상태를 확인할 수 있다. (OK)
     - 전체적인 원데이클래스에 대한 정보 및 예약 상태 등을 한번에 확인할 수 있다. (?)
     
-
-![분석설계_검증2_new](https://user-images.githubusercontent.com/27762942/130165878-e9c21803-e7a1-4709-aacd-3809144069e5.png)
-  
-    - 고객이 예약을 취소할 수 있다 (ok)
-    - 예약이 취소되면 Room예약 상태가 변경되고 결재가 취소된다 (ok)    
-    
-![분석설계_검증3_new](https://user-images.githubusercontent.com/27762942/130165879-b745209e-8a70-482e-9e63-1d1830f848d3.png)
-    
-    - 호텔관리자가 Room상태를 예약가능 처리 할 수 있다 (ok)
-    - 호텔관리자가 예약요청을 거절 할 수 있다 (ok)
-    - 예약이 취소되면 Room예약 상태가 변경되고 결재가 취소된다 (ok)   
-    - 고객이 예약상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok) 
-
-
 ### 모델 수정
 
 ![분석설계6_new](https://user-images.githubusercontent.com/27762942/130165883-b6ca8706-8189-4c9e-a529-1f4291eef6de.png)
