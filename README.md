@@ -131,7 +131,7 @@
         - PaymentRequested : 예약요청 시 결재가 바로 진행되어야 하므로, ReservationRequested 이벤트에 통합하여 처리가 필요함. 커맨드로 변경 필요. 
 
 ### 액터, 커맨드, 폴리시 부착하여 읽기 좋게
-![image](https://user-images.githubusercontent.com/45943968/131248766-5f3f8ab7-ba08-4c29-8cc7-df3bc40fa1f0.png)
+![image](https://user-images.githubusercontent.com/45943968/131248786-23f6c7bf-789c-44d5-97c0-7a6bea0dbc37.png)
 
 ### 어그리게잇으로 묶기
 ![image](https://user-images.githubusercontent.com/45943968/131248732-10e62936-fb15-454d-9dca-5c04cf181bfc.png)
@@ -139,8 +139,7 @@
     - Reservation, Payment, Lesson 은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그들 끼리 묶어줌
 
 ### 바운디드 컨텍스트로 묶기
-
-![분석설계4_new](https://user-images.githubusercontent.com/27762942/130165881-9bba6413-01c1-4d66-9501-c6093341e5f2.png)
+![image](https://user-images.githubusercontent.com/45943968/131248844-3cbdfe68-9a2f-4031-a607-5bc9df0d83e2.png)
 
     - 도메인 서열 분리 
         - Core Domain: Reservation, Lesson - 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 app 의 경우 1주일 1회 미만, store 의 경우 1개월 1회 미만
@@ -149,7 +148,7 @@
 
 ### 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
 
-![분석설계5_new](https://user-images.githubusercontent.com/27762942/130165882-245429c0-a357-4e89-b311-5648d3b0b8ef.png)
+![image](https://user-images.githubusercontent.com/45943968/131249097-f3266d09-3f82-4bd1-ae20-b14f8f8e79ad.png)
 
 ### 완성된 1차 모형
 
