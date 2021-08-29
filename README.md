@@ -121,14 +121,13 @@
 
 
 ### 이벤트 도출
-![분석설계2](https://user-images.githubusercontent.com/27762942/130018792-31a2ec30-300f-4c89-ad9e-00a09f05f0c9.png)
-
+![image](https://user-images.githubusercontent.com/45943968/131247407-f393e681-e3fa-42ae-99bf-6737a7f6feb4.png)
 
 ### 부적격 이벤트 탈락
-![분석설계2-2](https://user-images.githubusercontent.com/27762942/130022020-6c2f3509-c67d-4996-a70e-01347111fad1.png)
+![image](https://user-images.githubusercontent.com/45943968/131247416-c0d5b637-2948-4016-8ebe-f12b971f0203.png)
 
     - 과정중 도출된 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
-        - 예약 시>PaymentRequested :  결재가 완료되어야 예약이벤트가 발생하는 ACID 트랜잭션을 적용이 필요하므로 RoomReservationRequested이벤트와 통합하여 처리 필요
+        - PaymentRequested : 예약요청 시 결재가 바로 진행되기 떄문에, ReservationRequested 이벤트에 통합하여 처리가 필요함. 
 
 ### 액터, 커맨드 부착 및 어그리게잇으로 묶기
 ![분석설계3](https://user-images.githubusercontent.com/27762942/130018793-e01e48f0-0f85-4cf9-9f60-f1555fa43b5a.png)
