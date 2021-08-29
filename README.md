@@ -148,11 +148,11 @@
 
 ### 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
 
-![image](https://user-images.githubusercontent.com/45943968/131249097-f3266d09-3f82-4bd1-ae20-b14f8f8e79ad.png)
+![image](https://user-images.githubusercontent.com/45943968/131249257-d218ac14-65c7-4e43-b53d-0316de1b0941.png)
 
 ### 완성된 1차 모형
 
-![분석설계6_new](https://user-images.githubusercontent.com/27762942/130165883-b6ca8706-8189-4c9e-a529-1f4291eef6de.png)
+![image](https://user-images.githubusercontent.com/45943968/131249276-8ec973c1-c45f-42f8-ac13-5ff6766580a3.png)
 
     - View Model 추가
 
