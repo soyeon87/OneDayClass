@@ -32,12 +32,13 @@
 원데이클래스 예약 서비스 
 
 기능적 요구사항
-1. 고객이 원데이클래스를 선택하고, 예약요청과 함께 결재가 진행된다. 
-2. 결제가 완료되면, 작가에게 예약내역이 전달된다.
-3. 작가는 예약을 최종 승인/거절할 수 있다.
-4. 작가가 거절하면 예약이 취소된다.(결제도 취소)
-5. 고객이 예약을 취소할 수 있다.(결제도 취소)
-6. 고객은 예약 상태를 확인하고, 작가는 원데이클래스/예약 상태를 확인할 수 있다.
+1. 작가가 원데이클래스를 생성할 수 있다.
+2. 고객이 원데이클래스를 선택하고, 예약요청과 함께 결재가 진행된다. 
+3. 결제가 완료되면, 작가에게 예약내역이 전달된다.
+4. 작가는 예약을 최종 승인/거절할 수 있다.
+5. 작가가 거절하면 예약이 취소된다.(결제도 취소)
+6. 고객이 예약을 취소할 수 있다.(결제도 취소)
+7. 고객은 예약 상태를 확인하고, 작가는 원데이클래스/예약 상태를 확인할 수 있다.
 
 비기능적 요구사항
 1. 트랜잭션
@@ -121,27 +122,31 @@
 
 
 ### 이벤트 도출
-![image](https://user-images.githubusercontent.com/45943968/131247407-f393e681-e3fa-42ae-99bf-6737a7f6feb4.png)
+![image](https://user-images.githubusercontent.com/45943968/131248031-8b570cf4-3554-4846-bf42-093b7b11eadc.png)
 
 ### 부적격 이벤트 탈락
-![image](https://user-images.githubusercontent.com/45943968/131247416-c0d5b637-2948-4016-8ebe-f12b971f0203.png)
+![image](https://user-images.githubusercontent.com/45943968/131248043-87c769ae-dc04-4fda-97c5-f790ea435e18.png)
 
     - 과정중 도출된 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
-        - PaymentRequested : 예약요청 시 결재가 바로 진행되기 떄문에, ReservationRequested 이벤트에 통합하여 처리가 필요함. 
+        - PaymentRequested : 예약요청 시 결재가 바로 진행되어야 하므로, ReservationRequested 이벤트에 통합하여 처리가 필요함. 커맨드로 변경 필요. 
 
-### 액터, 커맨드 부착 및 어그리게잇으로 묶기
-![분석설계3](https://user-images.githubusercontent.com/27762942/130018793-e01e48f0-0f85-4cf9-9f60-f1555fa43b5a.png)
+### 액터, 커맨드, 폴리시 부착하여 읽기 좋게
+![image](https://user-images.githubusercontent.com/45943968/131248410-518fa611-6001-4748-ba4a-29f403d5335f.png)
 
-    - Customer의 Reservation, Hotel 의 Room예약현황관리, 결제의 결제이력은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그들 끼리 묶어줌
+
+### 어그리게잇으로 묶기
+![image](https://user-images.githubusercontent.com/45943968/131248522-14348525-1d79-4df2-a0e4-61d10e998082.png)
+
+    - Reservation, Payment, Lesson 은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그들 끼리 묶어줌
 
 ### 바운디드 컨텍스트로 묶기
 
 ![분석설계4_new](https://user-images.githubusercontent.com/27762942/130165881-9bba6413-01c1-4d66-9501-c6093341e5f2.png)
 
     - 도메인 서열 분리 
-        - Core Domain:  Customer(front), Hotel : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 app 의 경우 1주일 1회 미만, store 의 경우 1개월 1회 미만
-        - Supporting Domain:  ViewPage(ReservationStatusView) : 경쟁력을 내기위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
-        - General Domain:   payment : 결제서비스로 3rd Party 외부 서비스를 사용하는 것이 경쟁력이 높음 (핑크색으로 이후 전환할 예정)
+        - Core Domain: Reservation, Lesson - 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 app 의 경우 1주일 1회 미만, store 의 경우 1개월 1회 미만
+        - Supporting Domain: ViewPage - 경쟁력을 내기위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
+        - General Domain: Payment : 결제서비스로 3rd Party 외부 서비스를 사용하는 것이 경쟁력이 높음
 
 ### 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
 
