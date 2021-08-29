@@ -131,7 +131,7 @@
         - PaymentRequested : 예약요청 시 결재가 바로 진행되어야 하므로, ReservationRequested 이벤트에 통합하여 처리가 필요함. 커맨드로 변경 필요. 
 
 ### 액터, 커맨드, 폴리시 부착하여 읽기 좋게
-![image](https://user-images.githubusercontent.com/45943968/131248723-87c9faab-7ab8-42f7-af7a-19e1ce988b4f.png)
+![image](https://user-images.githubusercontent.com/45943968/131248766-5f3f8ab7-ba08-4c29-8cc7-df3bc40fa1f0.png)
 
 ### 어그리게잇으로 묶기
 ![image](https://user-images.githubusercontent.com/45943968/131248732-10e62936-fb15-454d-9dca-5c04cf181bfc.png)
