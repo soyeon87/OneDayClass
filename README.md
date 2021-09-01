@@ -235,9 +235,10 @@
 
   ![image](https://user-images.githubusercontent.com/45943968/131673063-56ad9df1-85a9-40e0-b832-b0a1af11abc4.png)
 
-- 실제로 view 페이지를 조회해 보면 모든 room에 대한 정보, 예약 상태, 결제 상태 등의 정보를 종합적으로 알 수 있다.
+- 실제로 view 페이지를 조회해 보면 모든 lesson 에 대한 정보, 예약 상태, 결제 상태 등의 정보를 종합적으로 알 수 있다.
 
-  ![97C55B73-4275-4385-964A-80768D033C66](https://user-images.githubusercontent.com/20436113/130180654-1d2c582f-8aa6-4bbd-b2a3-cf39a34e0b85.jpeg)
+![image](https://user-images.githubusercontent.com/45943968/131679340-a1b55611-5fac-4979-b534-3d9cec371e05.png)
+
 
   
 ## API 게이트웨이
@@ -346,34 +347,35 @@
 확인할 수 있습니다.
 
 
-예약등록
-http POST http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations customerId=1 roomId=21 roomName=2101호 customerName=soyeon hotelId=1 hotelName=신라 checkInDate=2021-08-18 checkOutDate=2021-09-01 roomPrice=1000 reservationStatus=RSV_REQUESTED paymentStatus=PAY_REQUESTED
+예약 등록
+http POST http://localhost:8088/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
+
+![image](https://user-images.githubusercontent.com/45943968/131676712-742d0792-cd1f-4888-bf28-54f23082676a.png)
 
 예약 후 - 예약 상태
-http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations
+http GET http://localhost:8088/reservations/1
 
-![E9547BE6-E3F8-482E-9D0D-89F960A1E521](https://user-images.githubusercontent.com/20436113/130180823-d93b2798-e94a-4d9e-9079-d1a423650fec.jpeg)
-
+![image](https://user-images.githubusercontent.com/45943968/131677485-93829e0a-d5a4-4ad9-930a-b1b895898c9d.png)
 
 예약 후 - 결제 상태
-http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/payments
+http GET http://localhost:8088/payments/1
 
-![CA0F6234-73A9-4053-BEB8-223915BF05E2](https://user-images.githubusercontent.com/20436113/130180841-9b9de6b5-3c2b-4545-9771-5ffcc2624362.jpeg)
-
+![image](https://user-images.githubusercontent.com/45943968/131677524-db6aab08-8056-4bf1-b940-50cdc5cd3e60.png)
 
 예약 취소
-http PATCH http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations/2 reservationStatus=RSV_CANCELED
+http PATCH http://localhost:8088/reservations/2 reservationStatus="RSV_CANCELED"
+
+![image](https://user-images.githubusercontent.com/45943968/131677284-82440d8a-047e-4ecf-b666-aa4c5de168b4.png)
 
 취소 후 - 예약 상태
-http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations
+http GET http://localhost:8088/reservations/2
 
-![469C164F-5ADD-4F4D-B785-16FAFF9EF3C3](https://user-images.githubusercontent.com/20436113/130180865-d2d6594b-f030-41a6-aa30-88026008093e.jpeg)
-
+![image](https://user-images.githubusercontent.com/45943968/131677383-4d3a303e-7332-4329-a076-9033b6412c44.png)
 
 취소 후 - 결제 상태
-http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/payments
+http GET http://localhost:8088/payments/2
 
-![FB1A6505-C230-40AD-A6CD-11B94005E02C](https://user-images.githubusercontent.com/20436113/130180880-685e9c41-a751-4706-894d-62e9afb2c8ce.jpeg)
+![image](https://user-images.githubusercontent.com/45943968/131677581-417601c1-165f-43fa-8d98-cc9c986b9081.png)
 
 
 
@@ -454,13 +456,13 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
 - 적용 후 REST API 의 테스트
 ```
 # lesson 서비스의 수업 등록
-http POST http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/roomManagements roomId=10 roomName="110호" roomStatus="ROOM_CREATED" roomPrice=1000 hotelId=1 hotelName="신라"
+http POST http://localhost:8088/lessons authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01  reservationStatus="LESSON_CREATED"
 
 # reservation 서비스의 예약 요청
-http POST http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations customerId=1 roomId=10 roomName=“110호” customerName=“soyeon” hotelId=1 hotelName=“신라” checkInDate=2021-08-18 checkOutDate=2021-09-01 roomPrice=1000 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
+http POST http://localhost:8088/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
 
 # reservation 서비스의 예약 상태 확인
-http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations
+http GET http://localhost:8088/reservations
 
 ```
 
@@ -524,14 +526,14 @@ public interface PaymentService {
 # 결제 (payment) 서비스를 잠시 내려놓음 (ctrl+c)
 
 # 예약 요청  - Fail
-http POST http://localhost:8088/reservations customerId=1 roomId=10 roomName=“110호” customerName=“soyeon” hotelId=1 hotelName=“신라” checkInDate=2021-08-18 checkOutDate=2021-09-01 roomPrice=1000 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
+http POST http://localhost:8088/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
 
 # 결제서비스 재기동
 cd payment
 mvn spring-boot:run
 
 # 예약 요청  - Success
-http POST http://localhost:8088/reservations customerId=1 roomId=10 roomName=“110호” customerName=“soyeon” hotelId=1 hotelName=“신라” checkInDate=2021-08-18 checkOutDate=2021-09-01 roomPrice=1000 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
+http POST http://localhost:8088/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
 
 ```
 
@@ -603,15 +605,15 @@ public class PolicyHandler{
 그 외 예약 승인/거부는 예약/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 유지보수로 인해 잠시 내려간 상태 라도 예약을 받는데 문제가 없다.
 
 ```
-# 호텔 서비스 (lesson) 를 잠시 내려놓음 (ctrl+c)
+# 수업(lesson) 서비스를 잠시 내려놓음 (ctrl+c)
 
 # 예약 요청  - Success
-http POST http://localhost:8088/reservations customerId=1 roomId=10 roomName=“110호” customerName=“soyeon” hotelId=1 hotelName=“신라” checkInDate=2021-08-18 checkOutDate=2021-09-01 roomPrice=1000 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
-   
+http POST http://localhost:8088/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
 
-# 예약 상태 확인  - hotel 서비스와 상관없이 예약 상태는 정상 확인
+# 예약 상태 확인  - lesson 서비스와 상관없이 예약 상태는 정상 확인
 http GET http://localhost:8088/reservations
 ```
+
 
 
 ## 폴리글랏 퍼시스턴스
@@ -665,9 +667,9 @@ public interface ReservationViewRepository extends CrudRepository<ReservationVie
 
 ```
 
-실제 MariaDB 접속하여 확인 시, 데이터 확인 가능 (ex. Customer에서 객실 예약 요청한 경우)
+실제 MariaDB 접속하여 확인 시, 데이터 확인 가능 (ex. reservation에서 예약 요청한 경우)
 
-![image](https://user-images.githubusercontent.com/45943968/130158245-2d242319-ab00-4224-9c88-93f4a90b7311.png)
+![image](https://user-images.githubusercontent.com/45943968/131681312-d9009957-10f9-4523-bf4f-ff27c9509d2b.png)
 
 
 # 운영
