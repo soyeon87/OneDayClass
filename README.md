@@ -200,16 +200,16 @@
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 808n 이다)
 
 ```
-   cd customer
+   cd reservation
    mvn spring-boot:run
    
    cd payment
    mvn spring-boot:run
    
-   cd hotel
+   cd lesson
    mvn spring-boot:run
    
-   cd viewPage
+   cd viewpage
    mvn spring-boot:run
    
    cd gateway
@@ -219,20 +219,21 @@
 
 ## CQRS
 
-숙소 생성 및 예약/결재 등 총 Status 에 대하여 고객(customer)/호텔매니저(hotel)가 조회 할 수 있도록 CQRS 로 구현하였다.
-- customer, payment, hotel 개별 Aggregate Status 를 통합 조회하여 성능 Issue 를 사전에 예방할 수 있다.
+원데이클래스 생성 및 예약/결재 등 총 Status 에 대하여 고객/작가가 조회 할 수 있도록 CQRS 로 구현하였다.
+- reservation, payment, lesson 개별 Aggregate Status 를 통합 조회하여 성능 Issue 를 사전에 예방할 수 있다.
 - 비동기식으로 처리되어 발행된 이벤트 기반 Kafka 를 통해 수신/처리 되어 별도 Table 에 관리한다
 - Table 모델링
 
-  ![image](https://user-images.githubusercontent.com/45943968/130036215-49ef828e-bee8-4160-8536-3da2cac75a71.png)
+  ![image](https://user-images.githubusercontent.com/45943968/131672665-88204e0c-abae-4478-93d8-82ba3342f775.png)
 
 - viewPage MSA PolicyHandler 를 통해 구현 
-  ("RoomCreated" 이벤트 발생 시, Pub/Sub 기반으로 별도 테이블에 저장)
+  ("LessonCreated" 이벤트 발생 시, Pub/Sub 기반으로 별도 테이블에 저장)
 
-  ![image](https://user-images.githubusercontent.com/45943968/130036716-7010815f-7d31-4201-8a02-dac1af5193ed.png)
-  ("RoomReservationReqeusted" 이벤트 발생 시, Pub/Sub 기반으로 별도 테이블에 저장)
+  ![image](https://user-images.githubusercontent.com/45943968/131673000-dd144068-c598-49e5-b298-3587af83fa25.png)
+  
+  ("ReservationRequested" 이벤트 발생 시, Pub/Sub 기반으로 별도 테이블에 저장)
 
-  ![image](https://user-images.githubusercontent.com/45943968/130036767-65e85e0b-503e-4fa8-b505-4b860eccd8ee.png)
+  ![image](https://user-images.githubusercontent.com/45943968/131673063-56ad9df1-85a9-40e0-b832-b0a1af11abc4.png)
 
 - 실제로 view 페이지를 조회해 보면 모든 room에 대한 정보, 예약 상태, 결제 상태 등의 정보를 종합적으로 알 수 있다.
 
@@ -242,6 +243,7 @@
 ## API 게이트웨이
 
       1. gateway 스프링부트 App을 추가 후 application.yaml내에 각 마이크로 서비스의 routes 를 추가하고 gateway 서버의 포트를 8080 으로 설정함
+      
           - application.yaml 예시
             ```
                spring:
@@ -249,22 +251,22 @@
 		  cloud:
 		    gateway:
 		      routes:
-			- id: customer
-			  uri: http://user04-customer:8080
+			- id: reservation
+			  uri: http://reservation:8080
 			  predicates:
 			    - Path=/reservations/** 
 			- id: payment
-			  uri: http://user04-payment:8080
+			  uri: http://payment:8080
 			  predicates:
 			    - Path=/payments/** 
-			- id: hotel
-			  uri: http://user04-hotel:8080
+			- id: lesson
+			  uri: http://lesson:8080
 			  predicates:
-			    - Path=/roomManagements/** 
-			- id: viewPage
-			  uri: http://user04-viewPage:8080
+			    - Path=/lessons/** 
+			- id: viewpage
+			  uri: http://viewpage:8080
 			  predicates:
-			    - Path=/reservationStatusViews/**
+			    - Path= /reservationViews/**
 		      globalcors:
 			corsConfigurations:
 			  '[/**]':
@@ -334,13 +336,13 @@
 
 # Correlation
 
-hotel reservation 프로젝트에서는 PolicyHandler에서 처리 시 어떤 건에 대한 처리인지를 구별하기 위한 Correlation-key 구현을 
+해당 프로젝트에서는 PolicyHandler에서 처리 시 어떤 건에 대한 처리인지를 구별하기 위한 Correlation-key 구현을 
 이벤트 클래스 안의 변수로 전달받아 서비스간 연관된 처리를 정확하게 구현하고 있습니다. 
 
 아래의 구현 예제를 보면
 
-예약(Reservation)을 하면 동시에 연관된 방(Room), 결제(Payment) 등의 서비스의 상태가 적당하게 변경이 되고,
-예약건의 취소를 수행하면 다시 연관된 방(Room), 결제(Payment) 등의 서비스의 상태값 등의 데이터가 적당한 상태로 변경되는 것을
+예약(Reservation)을 하면 동시에 연관된 수업(lesson), 결제(Payment) 등의 서비스의 상태가 적당하게 변경이 되고,
+예약건의 취소를 수행하면 다시 연관된 수업(lesson), 결제(Payment) 등의 서비스의 상태값 등의 데이터가 적당한 상태로 변경되는 것을
 확인할 수 있습니다.
 
 
@@ -380,7 +382,7 @@ http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.a
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다. (예시는 Reservation 마이크로 서비스). 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 현실에서 발생가는한 이벤트에 의하여 마이크로 서비스들이 상호 작용하기 좋은 모델링으로 구현을 하였다.
 
 ```
-package project;
+package onedayclass;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -393,20 +395,20 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id; 
-    private Long customerId;  // 고객 ID
-    private Long roomId; // 객실 ID
-    private String roomName; // 객실 이름
-    private String customerName; // 고객 이름 
-    private String reservationStatus; // 예약상태 (status: "RSV_REQUESTED", "RSV_APPROVED", "RSV_CANCELED", "RSV_REJECTED") 
-    private Long hotelId; // 호텔 ID
-    private String hotelName; // 호텔 이름
-    private Date checkInDate; // 체크인 날짜
-    private Date checkOutDate; // 체크아웃 날짜
-    private Long roomPrice; // 객실 가격
-    private String paymentStatus;  //결제상태 (status: "PAY_REQUESTED", "PAY_FINISHED", "PAY_CANCELED" )
-
-
+    private Long id;  		  	//예약 ID
+    private Long customerId;	  	//고객 ID
+    private String customerName;  	//고객명
+    private Long authorId;	  	//작가 ID
+    private String authorName;	  	//작가명
+    private Long lessonId;		//수업 ID
+    private String lessonName;		//수업명
+    private Date lessonDate;		//수업 일자
+    private Long lessonPrice;		//수업 가격
+    private String reservationStatus;	//예약 상태 ("RSV_REQUESTED", "RSV_APPROVED", "RSV_CANCELED", "RSV_REJECTED", "LESSON_CREATED")
+    private String paymentStatus;	//결재 상태 ("PAY_REQUESTED", "PAY_FINISHED", "PAY_CANCELED")
+    
+    -- 생략 --
+    
     public Long getId() {
         return id;
     }
@@ -421,13 +423,6 @@ public class Reservation {
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
     public String getCustomerName() {
         return customerName;
     }
@@ -435,96 +430,43 @@ public class Reservation {
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
-    public String getReservationStatus() {
-        return reservationStatus;
+    public Long getAuthorId() {
+        return authorId;
     }
-
-    public void setReservationStatus(String reservationStatus) {
-        this.reservationStatus = reservationStatus;
-    }
-    public Long getHotelId() {
-        return hotelId;
-    }
-
-    public void setHotelId(Long hotelId) {
-        this.hotelId = hotelId;
-    }
-    public String getHotelName() {
-        return hotelName;
-    }
-
-    public void setHotelName(String hotelName) {
-        this.hotelName = hotelName;
-    }
-    public Date getCheckInDate() {
-        return checkInDate;
-    }
-
-    public void setCheckInDate(Date checkInDate) {
-        this.checkInDate = checkInDate;
-    }
-    public Date getCheckOutDate() {
-        return checkOutDate;
-    }
-
-    public void setCheckOutDate(Date checkOutDate) {
-        this.checkOutDate = checkOutDate;
-    }
-    public Long getRoomPrice() {
-        return roomPrice;
-    }
-
-    public void setRoomPrice(Long roomPrice) {
-        this.roomPrice = roomPrice;
-    }
-
-    public String getPaymentStatus() {
-        return this.paymentStatus;
-    }
-
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
-    public String getRoomName() {
-        return this.roomName;
-    }
-
-    public void setRoomName(String roomName) {
-        this.roomName = roomName;
-    }
+    
+    -- 생략 --
 }
 
 ```
 - Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
 ```
-package project;
+package onedayclass;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel="reservations", path="reservations")
-public interface ReservationRepository extends PagingAndSortingRepository<Reservation, Long>{
+public interface ReservationRepository extends CrudRepository<Reservation, Long>{
 
 }
 
 ```
 - 적용 후 REST API 의 테스트
 ```
-# hotel 서비스의 room 등록
+# lesson 서비스의 수업 등록
 http POST http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/roomManagements roomId=10 roomName="110호" roomStatus="ROOM_CREATED" roomPrice=1000 hotelId=1 hotelName="신라"
 
-# customer 서비스의 예약 요청
+# reservation 서비스의 예약 요청
 http POST http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations customerId=1 roomId=10 roomName=“110호” customerName=“soyeon” hotelId=1 hotelName=“신라” checkInDate=2021-08-18 checkOutDate=2021-09-01 roomPrice=1000 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
 
-# customer 서비스의 예약 상태 확인
+# reservation 서비스의 예약 상태 확인
 http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.amazonaws.com:8080/reservations
 
 ```
 
 ## 동기식 호출(Sync) 과 Fallback 처리
 
-분석단계에서의 조건 중 하나로 예약(customer)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 
+분석단계에서의 조건 중 하나로 예약(reservation)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 
 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient로 이용하여 호출하도록 한다.
 
 - 결제 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
@@ -532,16 +474,17 @@ http GET http://a6a4aaabca1a8472bbc868fdedb425b2-1612457944.ap-northeast-2.elb.a
 ```
 # PaymentService.java
 
-package project.external;
+package onedayclass.external;
 
-<!--import 문 생략 -->
+-- import문 생략 --
 
-@FeignClient(name="Payment", url="${prop.room.url}")
+@FeignClient(name="payment", url="${prop.pay.url}")
 public interface PaymentService {
-    @RequestMapping(method= RequestMethod.POST, path="/payments")
-    public void requestPayment(@RequestBody Payment payment);
+    @RequestMapping(method= RequestMethod.POST, path="/payments/requestPayment")
+    public boolean requestPayment(@RequestBody Payment payment);
 
 }
+
 
 ```
 
@@ -549,36 +492,30 @@ public interface PaymentService {
 ```
 # Reservation.java (Entity)
 
-     @PostPersist
+    @PostPersist
     public void onPostPersist(){
-        System.out.println("*****객실 예약이 요청됨*****");
+        //원데이클래스 예약 요청
+        onedayclass.external.Payment payment = new onedayclass.external.Payment();
+        payment.setReservationId(this.getId());
+        payment.setCustomerId(this.getCustomerId());
+        payment.setCustomerName(this.getCustomerName());
+        payment.setAuthorId(this.getAuthorId());
+        payment.setAuthorName(this.getAuthorName());
+        payment.setLessonId(this.getLessonId());
+        payment.setLessonName(this.getLessonName());
+        payment.setLessonPrice(this.getLessonPrice());
+        payment.setPaymentStatus("PAY_FINISHED");
 
-        /* 객실 예약이 요청됨 */
-
-        // mappings goes here
-        /* 결제(payment) 동기 호출 진행 */
-        /* 결제 진행 가능 여부 확인 후 결제 */
-        project.external.Payment payment = new project.external.Payment();
-        if(this.getReservationStatus().equals("RSV_REQUESTED") && this.getPaymentStatus().equals("PAY_REQUESTED")){
-
-            payment.setReservationId(this.getId());
-            payment.setCustomerId(this.getCustomerId());
-            payment.setRoomId(this.getRoomId());
-            payment.setRoomName(this.getRoomName());
-            payment.setRoomPrice(this.getRoomPrice());
-            payment.setCustomerName(this.getCustomerName());
-            payment.setHotelId(this.getHotelId());
-            payment.setHotelName(this.getHotelName());
-            payment.setCheckInDate(this.getCheckInDate());
-            payment.setCheckOutDate(this.getCheckOutDate());
-            payment.setReservationStatus("RSV_REQUESTED");
-            payment.setPaymentStatus("PAY_FINISHED");
-        }
-        
-         CustomerApplication.applicationContext.getBean(project.external.PaymentService.class)
+        Boolean result = ReservationApplication.applicationContext.getBean(onedayclass.external.PaymentService.class)
             .requestPayment(payment);
-	  
+
+        if(result){
+            ReservationRequested reservationRequested = new ReservationRequested();
+            BeanUtils.copyProperties(this, reservationRequested);
+            reservationRequested.publishAfterCommit();
+        }
     }
+    
 ```
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인
@@ -604,13 +541,13 @@ http POST http://localhost:8088/reservations customerId=1 roomId=10 roomName=“
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
 
-결제가 이루어진 후에 예약 시스템의 상태가 업데이트 되고, 호텔 시스템의 상태 업데이트가 비동기식으로 호출된다.
+결제가 이루어진 후에 Reservation 서비스의 상태가 업데이트 되고, lesson 서비스의 상태 업데이트가 비동기식으로 호출된다.
 - 이를 위하여 결제가 승인되면 결제가 승인 되었다는 이벤트를 카프카로 송출한다. (Publish)
  
 ```
 # Payment.java
 
-package project;
+package onedayclass;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -622,10 +559,9 @@ import java.util.Date;
 public class Payment {
 
     ....
-   @PostPersist
+    @PostPersist
     public void onPostPersist(){
-
-        /* 결제 승인 이벤트 */
+        //결재 승인 처리 
         PaymentFinished paymentFinished = new PaymentFinished();
         BeanUtils.copyProperties(this, paymentFinished);
         paymentFinished.publishAfterCommit();
@@ -639,21 +575,27 @@ public class Payment {
 ```
 # PolicyHandler.java
 
-package project;
+package onedayclass;
 
 @Service
 public class PolicyHandler{
+    @Autowired ReservationRepository reservationRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPaymentFinished_UpdateReservationInfo(@Payload PaymentFinished paymentFinished){
-        /* 결제 완료 (PAY_FINISHED) */
-        /* 결제가 완료되면 객실 상태(paymentStatus)를 변경 */
- 
+    public void wheneverPaymentFinished_UpdateReservation(@Payload PaymentFinished paymentFinished){
+
         if(!paymentFinished.validate()) return;
 
-        System.out.println("\n\n##### listener UpdateReservationInfo : " + paymentFinished.toJson() + "\n\n");
+        System.out.println("\n\n##### listener paymentFinished : " + paymentFinished.toJson() + "\n\n");
+        // view 객체 조회
+        Optional<Reservation> res = reservationRepository.findById(paymentFinished.getReservationId());
+        Reservation reservation = res.get();
 
-        saveChangedStatus(paymentFinished.getReservationId(), "", "PAY_FINISHED");
+        if(reservation != null){
+            reservation.setPaymentStatus("PAY_FINISHED");
+            // view 레파지 토리에 update
+            reservationRepository.save(reservation);
+        }
 
     }
 ```
@@ -661,7 +603,7 @@ public class PolicyHandler{
 그 외 예약 승인/거부는 예약/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 유지보수로 인해 잠시 내려간 상태 라도 예약을 받는데 문제가 없다.
 
 ```
-# 호텔 서비스 (hotel) 를 잠시 내려놓음 (ctrl+c)
+# 호텔 서비스 (lesson) 를 잠시 내려놓음 (ctrl+c)
 
 # 예약 요청  - Success
 http POST http://localhost:8088/reservations customerId=1 roomId=10 roomName=“110호” customerName=“soyeon” hotelId=1 hotelName=“신라” checkInDate=2021-08-18 checkOutDate=2021-09-01 roomPrice=1000 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
@@ -678,32 +620,30 @@ viewPage 는 RDB 계열의 데이터베이스인 Maria DB 를 사용하기로 �
 별다른 작업없이 기존의 Entity Pattern 과 Repository Pattern 적용과 데이터베이스 관련 설정 (pom.xml, application.yml) 만으로 Maria DB 에 부착시켰다.
 
 ```
-# ReservationStatusView.java
+# ReservationView.java
 
-package project;
+package onedayclass;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Date;
 
 @Entity
-@Table(name="ReservationStatusView_table")
-public class ReservationStatusView {
+@Table(name="ReservationView_table")
+public class ReservationView {
 
 }
 
-# ReservationStatusViewRepository.java
-package project;
+# ReservationViewRepository.java
+
+package onedayclass;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
-public interface ReservationStatusViewRepository extends CrudRepository<ReservationStatusView, Long> {
-    ReservationStatusView findByReservationId(Long reservationId);
-    ReservationStatusView findByRoomId(Long roomId);
-    
+public interface ReservationViewRepository extends CrudRepository<ReservationView, Long> {
+    ReservationView findByLessonId(Long lessonId);
+    ReservationView findByReservationId(Long reservationId);
 }
 
 # pom.xml
