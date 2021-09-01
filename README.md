@@ -118,7 +118,7 @@
 ![분석설계1_new](https://user-images.githubusercontent.com/27762942/130180713-99d7d8ae-5b11-423c-9a56-15d9ba873dd2.png)
 
 ## Event Storming 결과
-* MSAEz 로 모델링한 이벤트스토밍 결과:  http://www.msaez.io/#/storming/ssjWGghxznaGd2kobQJthGGeKsO2/a788d224331f59423e1b7d082d3da2b6
+* MSAEz 로 모델링한 이벤트스토밍 결과:  http://www.msaez.io/#/storming/8NHeQIRBXBfYXX7GUi12aM35loE3/2c6e78b704e2c380bd0c3d75fcd2c64d
 
 
 ### 이벤트 도출
