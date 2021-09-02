@@ -17,7 +17,7 @@ public class PolicyHandler{
     @StreamListener(KafkaProcessor.INPUT)
     public void whenLessonCreated_then_CREATE_1 (@Payload LessonCreated lessonCreated) {
         try {
-            // 원데이클래스 생성
+            // 원데이클래스 생성 
             if (!lessonCreated.validate()) return;
 
             System.out.println("\n\n##### listener lessonCreated : " + lessonCreated.toJson() + "\n\n");           

@@ -2,9 +2,9 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: dr-payment
-  namespace: onedayclass
+  namespace: onedayclass
 spec:
-  host: user04-payment
+  host: user03-payment
   trafficPolicy:
     connectionPool:
       http:

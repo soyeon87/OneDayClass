@@ -1,13 +1,13 @@
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
 metadata:
-  name: vs-order-network-rule
-  namespace: onedayclass
+  name: vs-rev
+  namespace: onedayclass
 spec:
   hosts:
-  - order
+  - "user03-reservation"
   http:
-  - route:
-    - destination:
-      host: order
-    timeout: 3s
+  - route:
+    - destination:
+        host: "user03-reservation"
+    timeout: 0.1s

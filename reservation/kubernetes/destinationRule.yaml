@@ -2,11 +2,16 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: dr-reservation
-  namespace: onedayclass
+  namespace: onedayclass
 spec:
-  host: user-reservation
+  host: user03-reservation
   trafficPolicy:
     connectionPool:
       http:
         http1MaxPendingRequests: 1
         maxRequestsPerConnection: 1
+    outlierDetection:
+      interval: 1s
+      consecutiveErrors: 1
+      baseEjectionTime: 10s
+      maxEjectionPercent: 100
