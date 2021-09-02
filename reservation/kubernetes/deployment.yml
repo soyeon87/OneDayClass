@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-reservation
+  namespace: onedayclass
+  labels:
+    app: user-reservation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-reservation
+  template:
+    metadata:
+      labels:
+        app: user-reservation
+    spec:
+      containers:
+      - name: user-reservation
+        image: username/reservation:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: apiurl
+          valueFrom:
+            configMapKeyRef:
+              name: hotel-configmap
+              key: apiurl 
+        resources:
+          requests:
+            cpu: "250m"
+          limits:
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: '/actuator/health'
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: '/actuator/health'
+            port: 8080
+          initialDelaySeconds: 120
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 5

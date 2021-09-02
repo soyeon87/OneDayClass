@@ -1,0 +1,7 @@
+apiVersion: v1
+ kind: ConfigMap
+ metadata:
+   name: reservation-configmap
+   namespace: onedayclass
+ data:
+   apiurl: "http://user04-gateway:8080"

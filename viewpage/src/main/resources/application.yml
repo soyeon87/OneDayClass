@@ -1,0 +1,91 @@
+server:
+  port: 8080
+
+---
+
+spring:
+  profiles: default
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  #data:
+  #  mongodb:
+  #    uri: mongodb://localhost:27017/local
+  #main:
+  #  allow-bean-definition-overriding: true
+  #datasource:
+  #  url: jdbc:mariadb://localhost:3306/test
+  #  driver-class-name: org.mariadb.jdbc.Driver
+  #  username: root
+  #  password: rlathdus
+  #jpa:
+  #  open-in-view: false
+  #  generate-ddl: true
+  #  show-sql: true
+  #  hibernate:
+  #    ddl-auto: update
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      bindings:
+        event-in:
+          group: viewpage
+          destination: onedayclass
+          contentType: application/json
+        event-out:
+          destination: onedayclass
+          contentType: application/json
+
+logging:
+  level:
+    org.hibernate.type: trace
+    org.springframework.cloud: debug
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        data:
+#          mongodb:
+#            core:
+#              MongoTemplate: DEBUG
+
+server:
+  port: 8084
+---
+
+spring:
+  profiles: docker
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: my-kafka.kafka.svc.cluster.local:9092
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      bindings:
+        event-in:
+          group: viewpage
+          destination: onedayclass
+          contentType: application/json
+        event-out:
+          destination: onedayclass
+          contentType: application/json
