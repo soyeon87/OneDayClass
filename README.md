@@ -117,7 +117,7 @@
 ![image](https://user-images.githubusercontent.com/45943968/131886702-1b740c36-ce48-4ef2-b42f-f48abee94cc3.png)
 
 ## TO-BE 조직 (Vertically-Aligned)
-![분석설계1_new](https://user-images.githubusercontent.com/27762942/130180713-99d7d8ae-5b11-423c-9a56-15d9ba873dd2.png)
+![image](https://user-images.githubusercontent.com/45943968/131888297-b9302603-3b87-40a5-9dde-f0934af3460c.png)
 
 ## Event Storming 결과
 * MSAEz 로 모델링한 이벤트스토밍 결과:  http://www.msaez.io/#/storming/8NHeQIRBXBfYXX7GUi12aM35loE3/2c6e78b704e2c380bd0c3d75fcd2c64d
