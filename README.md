@@ -253,19 +253,19 @@
 		    gateway:
 		      routes:
 			- id: reservation
-			  uri: http://reservation:8080
+			  uri: http://user03-reservation:8080
 			  predicates:
 			    - Path=/reservations/** 
 			- id: payment
-			  uri: http://payment:8080
+			  uri: http://user03-payment:8080
 			  predicates:
 			    - Path=/payments/** 
 			- id: lesson
-			  uri: http://lesson:8080
+			  uri: http://user03-lesson:8080
 			  predicates:
 			    - Path=/lessons/** 
 			- id: viewpage
-			  uri: http://viewpage:8080
+			  uri: http://user03-viewpage:8080
 			  predicates:
 			    - Path= /reservationViews/**
 		      globalcors:
@@ -284,51 +284,52 @@
             ```
 
          
-      2. buildspec.yml 파일의 Deployment 설정 내용 
+      2. deployment.yaml 설정 내용 
           
             ```
-          apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: $_PROJECT_NAME
-            namespace: $_NAMESPACE
-            labels:
-              app: $_PROJECT_NAME
-          spec:
-            replicas: 1
-            selector:
-              matchLabels:
-                app: $_PROJECT_NAME
-            template:
-              metadata:
-                labels:
-                  app: $_PROJECT_NAME
-              spec:
-                containers:
-                  - name: $_PROJECT_NAME
-                    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
-                    ports:
-                      - containerPort: 8080
+		apiVersion: apps/v1
+		kind: Deployment
+		metadata:
+		  name: user03-gateway
+		  namespace: onedayclass
+		  labels:
+		    app: user03-gateway
+		spec:
+		  replicas: 1
+		  selector:
+		    matchLabels:
+		      app: user03-gateway
+		  template:
+		    metadata:
+		      labels:
+			app: user03-gateway
+		    spec:
+		      containers:
+		      - name: user03-gateway
+			image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-gateway:v1
+			ports:
+			- containerPort: 8080
+
             ```               
 
-      3. buildspec.yml 파일에 Service 설정 내용
+      3. service.yaml 파일에 Service 설정 내용
           
             ```
-            apiVersion: v1
-            kind: Service
-            metadata:
-              name: $_PROJECT_NAME
-              namespace: $_NAMESPACE
-              labels:
-                app: $_PROJECT_NAME
-            spec:
-              ports:
-                - port: 8080
-                  targetPort: 8080
-              selector:
-                app: $_PROJECT_NAME
-              type:
-                LoadBalancer   
+                apiVersion: v1
+		kind: Service
+		metadata:
+		  name: user03-gateway
+		  namespace: onedayclass
+		  labels:
+		    app: user03-gateway
+		spec:
+		  ports:
+		    - port: 8080
+		      targetPort: 8080
+		  selector:
+		    app: user03-gateway
+		    type:
+		      LoadBalancer 
             ```             
  
 적용된 Deploy, Service 및 API Gateway 엔드포인트 확인
@@ -676,13 +677,56 @@ public interface ReservationViewRepository extends CrudRepository<ReservationVie
 
 ## CI/CD 설정
 
-
-각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 AWS를 사용하였으며, pipeline build script 는 각 프로젝트의 하위 kubemetes 폴더에 있다. 
-프로젝트별 deployment.yaml, service.yaml 파일을 작성하여 배포하였다. 
-
+각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 AWS를 사용하였다.
+docker 명령어를 통해 이미지를 생성하고, 프로젝트별 deployment.yaml, service.yaml 파일을 작성하여 배포하였다. 
 
 
-EKS에 배포된 내용
+AWS ECR 현황
+
+![image](https://user-images.githubusercontent.com/45943968/131780296-e45d69cc-d85d-40c6-9534-1394d04acb08.png)
+
+AWS ECR에 이미지 생성
+
+```
+1. 각 서비스 별 폴더에서 mvn package 실행 -> docker 명령어를 통해 이미지 build 및 push
+
+cd reservation
+mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-reservation:v1 .
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-reservation:v1
+
+cd payment
+mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-payment:v1 .
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-payment:v1
+
+cd lesson
+mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-lesson:v1 .
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-lesson:v1
+
+cd viewpage
+mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-viewpage:v1 .
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-viewpage:v1
+
+cd gateway
+mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-gateway:v1 .
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-gateway:v1
+
+```
+
+EKS에 배포 확인
+
+```
+각 서비스별 하위 폴더인 kubemetes 의 depolyment.yaml, service.yaml 파일 배포
+( reservation, payment, lesson, viewpage, gateway 모두 진행 )
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+```
 
 ![eks](https://user-images.githubusercontent.com/87056402/130163825-92ffa0ae-26b2-4c79-b562-680c892fcdd9.png)
 
