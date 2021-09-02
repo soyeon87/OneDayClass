@@ -782,42 +782,60 @@ http POST http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
-* 서킷 브레이킹 프레임워크의 선택: istio의 Destination Rule을 적용 Traffic 관리함.
 
-시나리오는 고객서비스(customer)-->결제(payment) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
+시나리오는 예약(reservation)-->결제(payment) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 
+결제 요청이 과도할 경우 CB 를 통하여 장애격리.
 
-* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인:
-- 동시사용자 10명
-- 10초 동안 실시
+* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 10명, 10초 동안 실시
 
 ```
-siege -c10 -t10s -v http://user04-gateway:8080/payments 
+#siege 서비스 생성
+kubectl run siege --image=apexacme/siege-nginx -n onedayclass
+
+#seige pod 접속
+kubectl exec -it pod/siege-d484db9c-42d8q -c siege -n onedayclass -- /bin/bash
+
+
+siege -c10 -t10s -v -content-type "application/json" 'http://user03-reservation:8080/reservations POST {"customerId":1,"customerName":"soyeon","authorId":1,"authorName":"jon","lessonId":1,"lessonName":"Cook","lessonPrice":100,"lessonDate":2021-09-01,"reservationStatus":"RSV_REQUESTED","paymentStatus":"PAY_REQUESTED"}'
 
 ```
-![cb2](https://user-images.githubusercontent.com/87056402/130167142-290b8c51-3f08-4d84-91d0-878af3818059.png)
-CB가 없기 때문에 100% 성공
+
+* CB가 없기 때문에 100% 성공
+
+![image](https://user-images.githubusercontent.com/45943968/131796548-a7e97588-a294-400e-a8a1-568429c4ae8c.png)
+
+* 서킷 브레이킹 프레임워크의 선택: istio의 VirtualService 적용
 
 ```
-kubectl apply -f destinationRule -n hotels
+# istio-injection 활성화
+kubectl label namespace onedayclass istio-injection=enabled 
 
-kind: DestinationRule
+#
+kubectl apply -f VirtualService.yaml
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
 metadata:
-  name: dr-payment
+  name: vs-rev
+  namespace: onedayclass
 spec:
-  host: user04-payment
-  trafficPolicy:
-    connectionPool:
-      http:
-        http1MaxPendingRequests: 1
-        maxRequestsPerConnection: 1
+  hosts:
+  - "user03-reservation"
+  http:
+  - route:
+    - destination:
+        host: "user03-reservation"
+    timeout: 0.05s
+	
 ```
 
+* CB적용 되어 일부 실패 확인
 
-![cb3](https://user-images.githubusercontent.com/87056402/130168542-681767c3-970f-4a86-a2b9-4599abbb14cd.png)
-CB적용 되어 일부 실패 확인
+![image](https://user-images.githubusercontent.com/45943968/131803655-22733ecf-3c95-4ec1-ae34-362369d5aca0.png)
 
 
-### 오토스케일 아웃
+
+## 오토스케일 아웃
 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
 
 
