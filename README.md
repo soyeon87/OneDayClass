@@ -894,32 +894,42 @@ Customer 서비스 신규 버전으로 배포
 
 ## Liveness Probe
 
-테스트를 위해 buildspec.yml을 아래와 같이 수정 후 배포
+테스트를 위해 deployment.yml을 아래와 같이 수정 후 배포
 
 ```
-livenessProbe:
-                      # httpGet:
-                      #   path: /actuator/health
-                      #   port: 8080
-                      exec:
-                        command:
-                        - cat
-                        - /tmp/healthy
+	      containers:
+	      - name: user03-viewpage
+		image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-viewpage:v1
+		ports:
+		- containerPort: 8080
+		resources:
+		  requests:
+		    cpu: "250m"
+		  limits:
+		    cpu: "500m"
+		args:
+		- /bin/sh
+		- -c
+		- touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+		livenessProbe:
+		  exec:
+		    command:
+		    - cat
+		    - /tmp/healthy
+		  initialDelaySeconds: 120
+		  timeoutSeconds: 2
+		  periodSeconds: 5
+		  failureThreshold: 5
 ```
 
-![liveness1](https://user-images.githubusercontent.com/87056402/130177941-952fd244-5160-4873-b88a-d4951849dc58.png)
-
- pod 상태 확인
- 
- kubectl describe ~ 로 pod에 들어가서 아래 메시지 확인
- ```
- Warning  Unhealthy  26s (x2 over 31s)     kubelet            Liveness probe failed: cat: /tmp/healthy: No such file or directory
- ```
-
-/tmp/healthy 파일 생성
+컨테이너 실행 후 90초 동인은 정상이나, 이후 /tmp/healthy 파일이 삭제되어 livenessProbe에서 실패를 리턴하게 됨. (이후 자동으로 재시작)
 ```
-kubectl exec -it pod/user04-customer-5b7c4b6d7-p95n7 -n hotels -- touch /tmp/healthy
+kubectl describe pod/user03-viewpage-7589d5dfbc-z6qhm -n onedayclass 
 ```
-![liveness2](https://user-images.githubusercontent.com/87056402/130178115-6f9e3288-0220-43ea-a8f2-b0982470a3e5.png)
 
-성공 확인
+![image](https://user-images.githubusercontent.com/45943968/131827853-27c2e7f4-8bb4-4f4c-86f7-ed1620f6a6c6.png)
+
+pod의 restart 횟수가 증가함을 확인
+
+![image](https://user-images.githubusercontent.com/45943968/131828212-08ad6035-32da-49b8-abe5-d291535db136.png)
+
