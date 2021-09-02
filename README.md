@@ -677,16 +677,9 @@ public interface ReservationViewRepository extends CrudRepository<ReservationVie
 ## CI/CD 설정
 
 
-각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 AWS를 사용하였으며, pipeline build script 는 각 프로젝트 폴더 이하 buildspec.yml 에 포함되었다.
+각 구현체들은 각자의 source repository 에 구성되었고, 사용한 CI/CD 플랫폼은 AWS를 사용하였으며, pipeline build script 는 각 프로젝트의 하위 kubemetes 폴더에 있다. 
+프로젝트별 deployment.yaml, service.yaml 파일을 작성하여 배포하였다. 
 
-AWS CodeBuild 적용 현황
-![운영_코드빌드1](https://user-images.githubusercontent.com/27762942/130167703-3ca166f7-2c4d-4dc1-9d06-18a06fb70cfe.png)
-
-webhook을 통한 CI 확인
-![운영_코드빌드2](https://user-images.githubusercontent.com/27762942/130167704-10fb2f7a-c7cc-4c57-92d5-743a09fdc2fc.png)
-
-AWS ECR 적용 현황
-![image](https://user-images.githubusercontent.com/27762942/130168223-34759c4e-8f01-4c4a-95ed-921c9d41a71d.png)
 
 
 EKS에 배포된 내용
@@ -697,48 +690,47 @@ EKS에 배포된 내용
 
 ## ConfigMap 설정
 
+ 예약(reservation) -> 결제(payment) 로의 동기 호출 URL을 ConfigMap에 등록하여 사용하였다.
 
- 동기 호출 URL을 ConfigMap에 등록하여 사용
-
-
- kubectl apply -f configmap
+ kubectl apply -f configmap.yaml
 
 ```
- apiVersion: v1
+apiVersion: v1
  kind: ConfigMap
  metadata:
-   name: hotel-configmap
-   namespace: hotels
+   name: reservation-configmap
+   namespace: onedayclass
  data:
-   apiurl: "http://user04-gateway:8080"
+   payurl: "http://user03-gateway:8080"
 
 ```
-buildspec 수정
+
+예약(reservation) 서비스의 deployment.yaml 수정
 
 ```
-              spec:
-                containers:
-                  - name: $_PROJECT_NAME
-                    image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
-                    ports:
-                      - containerPort: 8080
-                    env:
-                    - name: apiurl
-                      valueFrom:
-                        configMapKeyRef:
-                          name: hotel-configmap
-                          key: apiurl 
+            spec:
+	      containers:
+	      - name: user03-reservation
+		image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-reservation:v1
+		ports:
+		- containerPort: 8080
+		env:
+		- name: payurl
+		  valueFrom:
+		    configMapKeyRef:
+		      name: reservation-configmap
+		      key: payurl 
                         
 ```            
 application.yml 수정
 ```
 prop:
-  room:
-    url: ${apiurl}
+  pay:
+    url: ${payurl}
 ``` 
 
 동기 호출 URL 실행
-![image](https://user-images.githubusercontent.com/45943968/130181863-9911ec1b-ce8d-4411-9334-8ddacb634035.png)
+
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
