@@ -922,7 +922,7 @@ Customer 서비스 신규 버전으로 배포
 		  failureThreshold: 5
 ```
 
-컨테이너 실행 후 90초 동인은 정상이나, 이후 /tmp/healthy 파일이 삭제되어 livenessProbe에서 실패를 리턴하게 됨. (이후 자동으로 재시작)
+컨테이너 실행 후 30초 동인은 정상이나, 이후 /tmp/healthy 파일이 삭제되어 livenessProbe에서 실패를 리턴하게 됨. (이후 자동으로 재시작)
 ```
 kubectl describe pod/user03-viewpage-7589d5dfbc-z6qhm -n onedayclass 
 ```
