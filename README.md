@@ -795,13 +795,13 @@ kubectl run siege --image=apexacme/siege-nginx -n onedayclass
 # seige pod 접속
 kubectl exec -it pod/siege-d484db9c-42d8q -c siege -n onedayclass -- /bin/bash
 
-# UR 호출
-siege -c10 -t10s -v -content-type "application/json" 'http://user03-reservation:8080/reservations POST {"customerId":1,"customerName":"soyeon","authorId":1,"authorName":"jon","lessonId":1,"lessonName":"Cook","lessonPrice":100,"lessonDate":2021-09-01,"reservationStatus":"RSV_REQUESTED","paymentStatus":"PAY_REQUESTED"}'
+# URL 호출
+siege -c10 -t10S -v --content-type "application/json" 'http://user03-reservation:8080/reservations POST {"customerId": 5, "customerName": "tom", "authorId": 1, "authorName": "jon", "lessonId": 1, "lessonName": "Cook", "lessonPrice": 100, "lessonDate": "2021-09-01", "reservationStatus": "RSV_REQUESTED", "paymentStatus": "PAY_REQUESTED"}'
 ```
 
 * CB가 없기 때문에 100% 성공
 
-![image](https://user-images.githubusercontent.com/45943968/131796548-a7e97588-a294-400e-a8a1-568429c4ae8c.png)
+![image](https://user-images.githubusercontent.com/45943968/131870706-b7252a9f-230b-49cd-b624-1df3b8d45988.png)
 
 * 서킷 브레이킹 프레임워크의 선택: istio의 VirtualService 적용
 
@@ -830,7 +830,7 @@ spec:
 
 * CB적용 되어 일부 실패 확인
 
-![image](https://user-images.githubusercontent.com/45943968/131803655-22733ecf-3c95-4ec1-ae34-362369d5aca0.png)
+![image](https://user-images.githubusercontent.com/45943968/131872288-552ca0be-6386-4360-9dbf-6e7e6d27f4ae.png)
 
 
 
