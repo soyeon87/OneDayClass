@@ -867,30 +867,65 @@ watch kubectl get pod -n onedayclass
 
 * 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
 
-- seige 로 배포작업 직전에 워크로드를 모니터링 함.
+siege 에서 URL을 호출한 상태에서, viewpage 서비스의 새 버전 배포하여 Availability 가 100% 미만으로 떨어졌는지 확인
 ```
-siege -c100 -t10S -v --content-type "application/json" 'http://user04-customer:8080/reservations'
+# siege 실행
+siege -c30 -t30S -v http://user03-viewpage:8080/reservationViews
+
+# 새버전으로의 배포 (v1->v2)
+kubectl apply -f deployment.yml
+
+    spec:
+      containers:
+      - name: user03-viewpage
+        image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-viewpage:v2
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "250m"
+          limits:
+            cpu: "500m"
+	   
+```
+![image](https://user-images.githubusercontent.com/45943968/131860406-082d73a7-6b86-4992-bc00-da7688b3d9b6.png)
+
+이를 막기위해 Readiness Probe 를 deployment.yml에 설정 추가함.
+```
+# deployment.yml
+
+    spec:
+      containers:
+      - name: user03-viewpage
+        image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-viewpage:v2
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "200m"
+          limits:
+            cpu: "400m"
+        readinessProbe:
+          httpGet:
+            path: '/actuator/health'
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 10
+	  
+# siege 실행
+siege -c30 -t30S -v http://user03-viewpage:8080/reservationViews
+
+# 재 배포 진행 
+kubectl apply -f deployment.yml
 
 ```
-
-```
-# buildspec.yaml 의 readiness probe 의 설정:
-
-                    readinessProbe:
-                      httpGet:
-                        path: /actuator/health
-                        port: 8080
-                      initialDelaySeconds: 10
-                      timeoutSeconds: 2
-                      periodSeconds: 5
-                      failureThreshold: 10
-```
-
-Customer 서비스 신규 버전으로 배포
-
-![readiness](https://user-images.githubusercontent.com/87056402/130174091-65759533-049d-4fca-aeca-3c2a52d61925.png)
-
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
+
+![image](https://user-images.githubusercontent.com/45943968/131862344-f80fddc7-f553-4036-a081-3a9fe394082b.png)
+
+
 
 ## Liveness Probe
 
