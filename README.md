@@ -853,7 +853,6 @@ siege -c10 -t10s -v  http://user03-gateway:8080/payments
 - 서비스 사용률 증가
 ![image](https://user-images.githubusercontent.com/45943968/131808012-822fafa8-e666-4b98-b647-56872ed1243f.png)
 
-
 - 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다. 
 
 스케일 아웃이 발생된 replica 확인
