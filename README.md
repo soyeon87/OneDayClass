@@ -850,15 +850,21 @@ kubectl autoscale deployment user03-payment --cpu-percent=10 --min=1 --max=10 -n
 siege -c10 -t10s -v  http://user03-gateway:8080/payments
 ```
 
-- 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다. 
-````
-# 오토스케일이 어떻게 되고 있는지 모니터링
-watch kubectl get pod -n onedayclass
-````
-
+- 서비스 사용률 증가
 ![image](https://user-images.githubusercontent.com/45943968/131808012-822fafa8-e666-4b98-b647-56872ed1243f.png)
 
+
+- 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다. 
+
+스케일 아웃이 발생된 replica 확인
+
+![image](https://user-images.githubusercontent.com/45943968/131809985-99ef2929-50dc-4efa-9734-4154fbdfaa55.png)
+
+pod 모니터링
+watch kubectl get pod -n onedayclass
+
 ![image](https://user-images.githubusercontent.com/45943968/131807809-60015f03-fe17-4b7d-9fed-ba67e3171fae.png)
+
 
 
 ## 무정지 재배포
