@@ -189,12 +189,12 @@
 
 ## 헥사고날 아키텍처 다이어그램 도출
     
-![헥사고날_new](https://user-images.githubusercontent.com/27762942/130165884-187c7007-b1e7-4729-a47b-c2f8880f74ce.png)
-
+![헥사구조](https://user-images.githubusercontent.com/45943968/131884274-0ff80c59-af53-41da-9309-a26d9d8e2a31.png)
 
     - Chris Richardson, MSA Patterns 참고하여 Inbound adaptor와 Outbound adaptor를 구분함
     - 호출관계에서 PubSub 과 Req/Resp 를 구분함
     - 서브 도메인과 바운디드 컨텍스트의 분리:  각 팀의 KPI 별로 아래와 같이 관심 구현 스토리를 나눠가짐
+
 
 
 # 구현:
