@@ -789,15 +789,14 @@ http POST http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2
 * 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 10명, 10초 동안 실시
 
 ```
-#siege 서비스 생성
+# siege 서비스 생성
 kubectl run siege --image=apexacme/siege-nginx -n onedayclass
 
-#seige pod 접속
+# seige pod 접속
 kubectl exec -it pod/siege-d484db9c-42d8q -c siege -n onedayclass -- /bin/bash
 
-
-siege -c10 -t10s -v -content-type "application/json" 'http://user03-reservation:8080/reservations POST {"customerId":1,"customerName":"soyeon","authorId":1,"authorName":"jon","lessonId":1,"lessonName":"Cook","lessonPrice":100,"lessonDate":2021-09-01,"reservationStatus":"RSV_REQUESTED","paymentStatus":"PAY_REQUESTED"}'
-
+# UR 호출
+siege -c10 -t10s -v -content-type "application/json" 'http://user03-reservation:8080/reservations POST {"customerId":1,"customerName":"soyeon","authorId":1,"authorName":"jon","lessonId":1,"lessonName":"Cook","lessonPrice":100,"lessonDate":2021-09-01,"reservationStatus":"RSV_REQUESTED","paymentStatus":"PAY_REQUESTED"}'
 ```
 
 * CB가 없기 때문에 100% 성공
@@ -810,7 +809,7 @@ siege -c10 -t10s -v -content-type "application/json" 'http://user03-reservation
 # istio-injection 활성화
 kubectl label namespace onedayclass istio-injection=enabled 
 
-#
+# VirtualService 적용 
 kubectl apply -f VirtualService.yaml
 
 apiVersion: networking.istio.io/v1alpha3
