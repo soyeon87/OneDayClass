@@ -15,7 +15,6 @@
   - [구현:](#구현-)
     - [DDD 의 적용](#ddd-의-적용)
     - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
-    - [폴리글랏 프로그래밍](#폴리글랏-프로그래밍)
     - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
     - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
   - [운영](#운영)
@@ -237,7 +236,9 @@
 
 - 실제로 view 페이지를 조회해 보면 모든 lesson 에 대한 정보, 예약 상태, 결제 상태 등의 정보를 종합적으로 알 수 있다.
 
-![image](https://user-images.githubusercontent.com/45943968/131679340-a1b55611-5fac-4979-b534-3d9cec371e05.png)
+http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservationViews
+
+![image](https://user-images.githubusercontent.com/45943968/131789977-dd1820ca-2e37-450d-aad5-fb35dd4f343d.png)
 
 
   
@@ -337,47 +338,46 @@ depolyment.yaml 및 service.yaml 적용 후, Deploy, Service 및 API Gateway 엔
 ![image](https://user-images.githubusercontent.com/45943968/131781815-50631a77-2eae-4c1c-9217-be6e2e2ffd2c.png)
 
 
+
 # Correlation
 
 해당 프로젝트에서는 PolicyHandler에서 처리 시 어떤 건에 대한 처리인지를 구별하기 위한 Correlation-key 구현을 
 이벤트 클래스 안의 변수로 전달받아 서비스간 연관된 처리를 정확하게 구현하고 있습니다. 
 
-아래의 구현 예제를 보면
-
+아래의 구현 예제를 보면,
 예약(Reservation)을 하면 동시에 연관된 수업(lesson), 결제(Payment) 등의 서비스의 상태가 적당하게 변경이 되고,
-예약건의 취소를 수행하면 다시 연관된 수업(lesson), 결제(Payment) 등의 서비스의 상태값 등의 데이터가 적당한 상태로 변경되는 것을
-확인할 수 있습니다.
+예약건의 취소를 수행하면 다시 연관된 수업(lesson), 결제(Payment) 등의 서비스의 상태값 등의 데이터가 적당한 상태로 변경되는 것을 확인할 수 있습니다.
 
 
 예약 등록
-http POST http://localhost:8088/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
+http POST http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
 
-![image](https://user-images.githubusercontent.com/45943968/131676712-742d0792-cd1f-4888-bf28-54f23082676a.png)
+![image](https://user-images.githubusercontent.com/45943968/131788047-e0838c96-0544-40e1-9df2-e36a95637adf.png)
 
 예약 후 - 예약 상태
-http GET http://localhost:8088/reservations/1
+http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservations/1
 
-![image](https://user-images.githubusercontent.com/45943968/131677485-93829e0a-d5a4-4ad9-930a-b1b895898c9d.png)
+![image](https://user-images.githubusercontent.com/45943968/131788158-7fb788cf-7592-4a30-aa57-d09d36e7e7ea.png)
 
 예약 후 - 결제 상태
-http GET http://localhost:8088/payments/1
+http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/payments/1
 
-![image](https://user-images.githubusercontent.com/45943968/131677524-db6aab08-8056-4bf1-b940-50cdc5cd3e60.png)
+![image](https://user-images.githubusercontent.com/45943968/131788253-f5afb443-19fa-4088-b2fc-010b8789e227.png)
 
 예약 취소
-http PATCH http://localhost:8088/reservations/2 reservationStatus="RSV_CANCELED"
+http PATCH http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservations/1 reservationStatus="RSV_CANCELED"
 
-![image](https://user-images.githubusercontent.com/45943968/131677284-82440d8a-047e-4ecf-b666-aa4c5de168b4.png)
+![image](https://user-images.githubusercontent.com/45943968/131788418-027f2fe8-ee50-44be-908b-c54980f60834.png)
 
 취소 후 - 예약 상태
-http GET http://localhost:8088/reservations/2
+http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservations/1
 
-![image](https://user-images.githubusercontent.com/45943968/131677383-4d3a303e-7332-4329-a076-9033b6412c44.png)
+![image](https://user-images.githubusercontent.com/45943968/131788467-bd05649a-7a99-4b2f-8c4a-629b4a3abd91.png)
 
 취소 후 - 결제 상태
-http GET http://localhost:8088/payments/2
+http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/payments/1
 
-![image](https://user-images.githubusercontent.com/45943968/131677581-417601c1-165f-43fa-8d98-cc9c986b9081.png)
+![image](https://user-images.githubusercontent.com/45943968/131788524-aa59cd1b-31ff-48a6-a3bc-7b6e2619e3aa.png)
 
 
 
@@ -457,16 +457,15 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
 ```
 - 적용 후 REST API 의 테스트
 ```
-# lesson 서비스의 수업 등록
-http POST http://localhost:8088/lessons authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01  reservationStatus="LESSON_CREATED"
 
 # reservation 서비스의 예약 요청
-http POST http://localhost:8088/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
+http POST http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
 
 # reservation 서비스의 예약 상태 확인
-http GET http://localhost:8088/reservations
+http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservations
 
 ```
+
 
 ## 동기식 호출(Sync) 과 Fallback 처리
 
@@ -488,8 +487,6 @@ public interface PaymentService {
     public boolean requestPayment(@RequestBody Payment payment);
 
 }
-
-
 ```
 
 - 예약 요청을 받은 직후(@PostPersist) 가능상태 확인 및 결제를 동기(Sync)로 요청하도록 처리
@@ -674,6 +671,7 @@ public interface ReservationViewRepository extends CrudRepository<ReservationVie
 ![image](https://user-images.githubusercontent.com/45943968/131681312-d9009957-10f9-4523-bf4f-ff27c9509d2b.png)
 
 
+
 # 운영
 
 ## CI/CD 설정
@@ -724,12 +722,12 @@ EKS에 배포 확인
 각 서비스별 하위 폴더인 kubemetes 의 depolyment.yaml, service.yaml 파일 배포
 ( reservation, payment, lesson, viewpage, gateway 모두 진행 )
 
-kubectl apply -f deployment.yaml
+kubectl apply -f deployment.yml
 kubectl apply -f service.yaml
 
 ```
 
-![eks](https://user-images.githubusercontent.com/87056402/130163825-92ffa0ae-26b2-4c79-b562-680c892fcdd9.png)
+![image](https://user-images.githubusercontent.com/45943968/131787052-75315b74-2aba-4107-865f-e18442f29164.png)
 
 
 
@@ -738,7 +736,7 @@ kubectl apply -f service.yaml
  예약(reservation) -> 결제(payment) 로의 동기 호출 URL을 ConfigMap에 등록하여 사용하였다.
 
  kubectl apply -f configmap.yaml
-
+ 
 ```
 apiVersion: v1
  kind: ConfigMap
@@ -774,7 +772,11 @@ prop:
     url: ${payurl}
 ``` 
 
-동기 호출 URL 실행
+동기 호출 URL 실행 - 예약 요청
+
+http POST http http://a0e469d08505d48aa90f700f1205288c-1141681070.ap-northeast-2.elb.amazonaws.com:8080/reservations customerId=1 customerName=“soyeon” authorId=1 authorName="jon" lessonId=1 lessonName="Cook" lessonPrice=100 lessonDate=2021-09-01 reservationStatus=“RSV_REQUESTED" paymentStatus="PAY_REQUESTED"
+
+![image](https://user-images.githubusercontent.com/45943968/131788047-e0838c96-0544-40e1-9df2-e36a95637adf.png)
 
 
 
