@@ -890,14 +890,14 @@ kubectl apply -f deployment.yml
 ```
 ![image](https://user-images.githubusercontent.com/45943968/131860406-082d73a7-6b86-4992-bc00-da7688b3d9b6.png)
 
-이를 막기위해 Readiness Probe 를 deployment.yml에 설정 추가함.
+이를 막기위해 Readiness Probe 를 deployment.yml에 설정 추가하여 배포
 ```
 # deployment.yml
 
     spec:
       containers:
       - name: user03-viewpage
-        image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-viewpage:v2
+        image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user03-viewpage:v3
         ports:
         - containerPort: 8080
         resources:
