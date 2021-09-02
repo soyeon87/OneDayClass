@@ -838,7 +838,7 @@ spec:
 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에,
 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
 
-- 결제(payment) 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 10프로를 넘어서면 replica 를 10개까지 늘려준다.
+- 결제(payment) 서비스에 대한 pod를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 10프로를 넘어서면 pod를 10개까지 늘려준다.
 ```
 kubectl autoscale deployment user03-payment --cpu-percent=10 --min=1 --max=10 -n onedayclass
 ```
@@ -855,14 +855,13 @@ siege -c10 -t10s -v  http://user03-gateway:8080/payments
 
 - 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다. 
 
-스케일 아웃이 발생된 replica 확인
-
-![image](https://user-images.githubusercontent.com/45943968/131809985-99ef2929-50dc-4efa-9734-4154fbdfaa55.png)
-
-pod 모니터링
 watch kubectl get pod -n onedayclass
 
 ![image](https://user-images.githubusercontent.com/45943968/131807809-60015f03-fe17-4b7d-9fed-ba67e3171fae.png)
+
+replica 확인
+
+![image](https://user-images.githubusercontent.com/45943968/131809985-99ef2929-50dc-4efa-9734-4154fbdfaa55.png)
 
 
 
