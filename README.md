@@ -13,10 +13,13 @@
   - [체크포인트](#체크포인트)
   - [분석/설계](#분석설계)
   - [구현:](#구현-)
+    - [CQRS](#CQRS)
+    - [API 게이트웨이](#API-게이트웨이)
+    - [Correlation](#Correlation)
     - [DDD 의 적용](#ddd-의-적용)
-    - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
     - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
     - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
+    - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
   - [운영](#운영)
     - [CI/CD 설정](#cicd설정)
     - [ConfigMap 설정](#ConfigMap-설정)
@@ -339,7 +342,7 @@ depolyment.yaml 및 service.yaml 적용 후, Deploy, Service 및 API Gateway 엔
 
 
 
-# Correlation
+## Correlation
 
 해당 프로젝트에서는 PolicyHandler에서 처리 시 어떤 건에 대한 처리인지를 구별하기 위한 Correlation-key 구현을 
 이벤트 클래스 안의 변수로 전달받아 서비스간 연관된 처리를 정확하게 구현하고 있습니다. 
