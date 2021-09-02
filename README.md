@@ -859,8 +859,6 @@ watch kubectl get pod -n onedayclass
 
 ![image](https://user-images.githubusercontent.com/45943968/131807809-60015f03-fe17-4b7d-9fed-ba67e3171fae.png)
 
-replica 확인
-
 ![image](https://user-images.githubusercontent.com/45943968/131809985-99ef2929-50dc-4efa-9734-4154fbdfaa55.png)
 
 
