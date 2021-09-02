@@ -827,7 +827,7 @@ spec:
   - route:
     - destination:
         host: "user03-reservation"
-    timeout: 0.05s
+    timeout: 0.1s
 	
 ```
 
