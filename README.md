@@ -835,23 +835,30 @@ spec:
 
 
 ## 오토스케일 아웃
-앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
+앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에,
+이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
 
+- 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 10프로를 넘어서면 replica 를 10개까지 늘려준다.
+```
+kubectl autoscale deployment user03-payment --cpu-percent=10 --min=1 --max=10 -n onedayclass
+```
 
-- 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
-```
-kubectl autoscale deploy user04-payment --min=1 --max=10 --cpu-percent=15 -n hotels
-```
+![image](https://user-images.githubusercontent.com/45943968/131807140-87dbc107-a80c-434c-be9d-1c2704f0af8f.png)
+
 - CB 에서 했던 방식대로 부하 발생
 ```
-siege -c10 -t10s -v http://user04-gateway:8080/payments 
+siege -c10 -t10s -v  http://user03-gateway:8080/payments
 ```
-- 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
 
-![hpa1](https://user-images.githubusercontent.com/87056402/130169194-50946c9e-8c49-4078-8c52-ad6b056f98b2.png)
+- 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다. 
+````
+# 오토스케일이 어떻게 되고 있는지 모니터링
+watch kubectl get pod -n onedayclass
+````
 
+![image](https://user-images.githubusercontent.com/45943968/131808012-822fafa8-e666-4b98-b647-56872ed1243f.png)
 
-
+![image](https://user-images.githubusercontent.com/45943968/131807809-60015f03-fe17-4b7d-9fed-ba67e3171fae.png)
 
 
 ## 무정지 재배포
