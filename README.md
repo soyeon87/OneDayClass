@@ -332,9 +332,10 @@
 		      LoadBalancer 
             ```             
  
-적용된 Deploy, Service 및 API Gateway 엔드포인트 확인
+depolyment.yaml 및 service.yaml 적용 후, Deploy, Service 및 API Gateway 엔드포인트 확인
 
-![image](https://user-images.githubusercontent.com/45943968/130165112-93587d48-d563-46f5-a432-a73ff951a530.png)
+![image](https://user-images.githubusercontent.com/45943968/131781815-50631a77-2eae-4c1c-9217-be6e2e2ffd2c.png)
+
 
 # Correlation
 
